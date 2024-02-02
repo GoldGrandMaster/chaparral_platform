@@ -2,13 +2,10 @@ import React from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';
-
 import LoginModal from "./login-modal";
 import config from "@/config";
-
 export const Login = () => {
   const navigate = useNavigate();
-
   const handleLogin = async (
     username: string,
     password: string,
@@ -41,17 +38,16 @@ export const Login = () => {
             'Authorization': 'Bearer ' + localStorage.getItem('token')
           }
         })
-          .then((response: Response) => {
-            if (response.ok) return response.json();
-            else {
+          .then((response: Response) => response.json())
+          .then((account: any) => {
+            if (!account.activated) {
               localStorage.removeItem("account");
               toast.error("Your account is not activated");
+            } else {
+              localStorage.setItem("account", JSON.stringify(account));
+              navigate('/user');
+              toast.success("Successfully logged in!");
             }
-          })
-          .then((account: any) => {
-            localStorage.setItem("account", JSON.stringify(account));
-            navigate('/user');
-            toast.success("Successfully logged in!");
           })
           .catch((error: Error) => {
             console.error("Error during login:", error);
@@ -60,10 +56,33 @@ export const Login = () => {
       })
       .catch((error: Error) => {
         console.error("Error during login:", error);
-        toast.error("An error occurred during login.");
+        toast.error("An error occurred during login.\n" + error.message + error.name + error.cause);
       })
   };
 
+  // const handleLogin = async (
+  //   username: any,
+  //   password: any,
+  //   rememberMe = false
+  // ) => {
+  //   let msg: any = await invoke("login", { username, password, rememberMe });
+  //   msg = msg && JSON.parse(msg);
+  //   if (msg && msg.id_token) {
+  //     localStorage.setItem("token", msg.id_token);
+  //     let account: any = await invoke("get_account", { authorization: 'Bearer ' + localStorage.getItem('token') });
+  //     account = account && JSON.parse(account);
+  //     if (account.activated) {
+  //       localStorage.setItem("account", JSON.stringify(account));
+  //       navigate('/user');
+  //       toast.success("Successfully logged in!");
+  //     } else {
+  //       localStorage.removeItem("account");
+  //       toast.error("Your account is not activated");
+  //     }
+  //   } else {
+  //     toast.error("Something went wrong. Please check your credentials.");
+  //   }
+  // };
 
   return (
     <LoginModal

@@ -49,9 +49,9 @@ public class DomainUserDetailsService implements ReactiveUserDetailsService {
     }
 
     private org.springframework.security.core.userdetails.User createSpringSecurityUser(String lowercaseLogin, User user) {
-        if (!user.isActivated()) {
-            throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
-        }
+//        if (!user.isActivated()) {
+//            throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
+//        }
         List<SimpleGrantedAuthority> grantedAuthorities = user
             .getAuthorities()
             .stream()

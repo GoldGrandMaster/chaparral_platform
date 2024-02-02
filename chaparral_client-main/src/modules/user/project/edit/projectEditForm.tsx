@@ -46,7 +46,7 @@ const ProjectForm = () => {
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                id: JSON.parse(localStorage.getItem('currentProject'))[1],
+                id: JSON.parse(localStorage.getItem('currentProject') || "")[1],
                 name: formData.name,
                 description: formData.description
             })
@@ -65,7 +65,7 @@ const ProjectForm = () => {
             });
     };
     useEffect(() => {
-        const curProj = JSON.parse(localStorage.getItem('currentProject'));
+        const curProj = JSON.parse(localStorage.getItem('currentProject') || "");
         setFormData({
             name: curProj[2],
             description: curProj[3]

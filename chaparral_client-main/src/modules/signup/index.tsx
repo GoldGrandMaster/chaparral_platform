@@ -8,7 +8,6 @@ import { Input } from '@/common/components/ui/input';
 
 import generateState from "../../common/misc/stateGenerator";
 import config from "@/config";
-import { P } from "@tauri-apps/api/tauri-d78b6be0";
 
 const Form = styled.form(() => ({
   display: "flex",

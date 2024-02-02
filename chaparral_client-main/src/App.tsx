@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import AppRoutes from './routes';
 import { ThemeProvider } from "./common/components/theme-provider";
 import { TailwindIndicator } from "./common/components/tailwind-indicator";
+import { useEffect } from "react";
 
 function App() {
   return (

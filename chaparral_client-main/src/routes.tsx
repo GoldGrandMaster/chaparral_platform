@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import Login from "./modules/login";
 import { Card } from "reactstrap";
@@ -12,7 +12,6 @@ import PrivateRoute from "@/common/misc/privateroute";
 import ProjectListviewPage from "./modules/user/project/listview/projectListviewPage";
 import ProjectFormPage from "@/modules/user/project/form/projectFormPage";
 import ProjectEditFormPage from "@/modules/user/project/edit/projectEditFormPage";
-
 const AppRoutes = () => {
   return (
     <div className="view-routes">

@@ -46,7 +46,7 @@ export interface ILoginModalProps {
 }
 
 const LoginModal = (props: ILoginModalProps) => {
-  const login = ({ userName, password, rememberMe }: {userName: any, password: any, rememberMe: any}) => {
+  const login = ({ userName, password, rememberMe }: { userName: any, password: any, rememberMe: any }) => {
     props.handleLogin(userName, password, rememberMe);
   };
 
@@ -55,71 +55,71 @@ const LoginModal = (props: ILoginModalProps) => {
 
   const handleLoginSubmit = (e: any) => {
     e.preventDefault();
-    login({...e, userName, password});
+    login({ ...e, userName, password });
   };
 
   return (
-      <Form 
+    <Form
       onSubmit={(handleLoginSubmit)}
+    >
+      <Header id="login-title" data-cy="loginTitle"
       >
-        <Header id="login-title" data-cy="loginTitle" 
-        >
-          Sign in
-        </Header>
-        <ModalBody>
-          <Row>
-            <Col md="12" onChange={(e: any) => {
-              if (e.target.name === 'username') {
-                setUserName(e.target.value.trim());
-              } else if (e.target.name === 'password') {
-                setPassword(e.target.value.trim());
-              }
-              e.stopPropagation();
-            }}>
-              <Input
-                name="username"
-                placeholder="Your username"
-                required
-                autoFocus
-                data-cy="username"
-                value={userName}
-                style={{width:'225px'}}
-              />
-              <br />
-              <Input
-                name="password"
-                type="password"
-                placeholder="Your password"
-                required
-                data-cy="password"
-                value={password}
-                style={{width:'225px', marginBottom: '15px'}}
-              />
-              <br/>
-              {/* <RememberMe>
+        Sign in
+      </Header>
+      <ModalBody>
+        <Row>
+          <Col md="12" onChange={(e: any) => {
+            if (e.target.name === 'username') {
+              setUserName(e.target.value.trim());
+            } else if (e.target.name === 'password') {
+              setPassword(e.target.value.trim());
+            }
+            e.stopPropagation();
+          }}>
+            <Input
+              name="username"
+              placeholder="Your username"
+              required
+              autoFocus
+              data-cy="username"
+              value={userName}
+              style={{ width: '225px' }}
+            />
+            <br />
+            <Input
+              name="password"
+              type="password"
+              placeholder="Your password"
+              required
+              data-cy="password"
+              value={password}
+              style={{ width: '225px', marginBottom: '15px' }}
+            />
+            <br />
+            {/* <RememberMe>
               <input name="rememberMe" type="checkbox" 
               // check
               //  label="Remember me"
               //  value={true} 
               //  register={register} 
                /> Remember me</RememberMe> */}
-            </Col>
-          </Row>
-          <BottomLinks>
-            <Link to="/forgot-password" data-cy="forgetYourPasswordSelector">
-              Forgot password?
-            </Link>
-            <Link to="/signup">
-              Signup
-            </Link>
-          </BottomLinks>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" type="submit" data-cy="submit">
-            Sign in
-          </Button>
-        </ModalFooter>
-      </Form>
+          </Col>
+        </Row>
+        <BottomLinks>
+          <Link to="/forgot-password" data-cy="forgetYourPasswordSelector">
+            Forgot password?
+          </Link>
+          <Link to="/signup">
+            Signup
+          </Link>
+        </BottomLinks>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="primary" type="submit" data-cy="submit">
+          Sign in
+        </Button>
+      </ModalFooter>
+    </Form>
   );
 };
 

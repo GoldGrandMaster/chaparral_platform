@@ -7,6 +7,7 @@ import styled from "styled-components";
 
 import generateState from "../../common/misc/stateGenerator";
 import config from "@/config";
+import { Input } from "@/common/components/ui/input";
 
 const Form = styled.form(() => ({
   display: "flex",
@@ -75,6 +76,7 @@ const ResetPassword = () => {
         Reset password
       </Header>
       <p>Please check your email for the reset key.</p>
+      <br></br>
       <ModalBody>
         <Row>
           <Col
@@ -91,24 +93,24 @@ const ResetPassword = () => {
               e.stopPropagation();
             }}
           >
-            <input
+            <Input
               name="reset_key"
               placeholder="Reset key"
               required
               autoFocus
               data-cy="reset_key"
               value={resetKey.value}
-              style={{ width: "225px", marginBottom: "15px" }}
+              style={{ width: "225px" }}
             />
             <br />
-            <input
+            <Input
               name="new_password"
               type="password"
               placeholder="New password"
               required
               data-cy="new_password"
               value={newPassword.value}
-              style={{ width: "225px", marginBottom: "15px" }}
+              style={{ width: "225px" }}
             />
             <br />
           </Col>

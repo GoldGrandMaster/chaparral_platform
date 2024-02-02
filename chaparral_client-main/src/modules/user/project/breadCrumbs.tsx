@@ -3,7 +3,7 @@ import {
   useLocation, useNavigate,
 } from 'react-router-dom';
 import { styled } from 'styled-components';
-import { Chip } from '@mui/material';
+import { Chip, PaletteMode } from '@mui/material';
 import { useTheme } from 'next-themes';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 function Page() {
@@ -18,7 +18,7 @@ function Page() {
   return (
     <ThemeProvider theme={createTheme({
       palette: {
-        mode: theme
+        mode: (theme ? theme : 'dark') as PaletteMode
       }
     })}>
       <Breadcrumbs aria-label="breadcrumb">

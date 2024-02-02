@@ -25,7 +25,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import tech.jhipster.security.RandomUtil;
-
 /**
  * Service class for managing users.
  */
@@ -78,6 +77,8 @@ public class UserService {
 
     @Transactional
     public Mono<User> requestPasswordReset(String mail) {
+        mail = mail.substring(1, mail.length() - 1);
+        System.out.println(mail);
         return userRepository
             .findOneByEmailIgnoreCase(mail)
             .filter(User::isActivated)

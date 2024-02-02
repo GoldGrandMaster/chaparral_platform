@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import config from '@/config';
 import { toast } from 'react-toastify';
-import { IconButton } from '@mui/material';
+import { IconButton, PaletteMode } from '@mui/material';
 import { EditIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -34,7 +34,7 @@ const ProjectsTable = () => {
                     toast.error(data.detail);
                 } else {
                     // const parsedResponse = JSON.parse(data as string) as any[];
-                    data = data.map((val, ind) => {
+                    data = data.map((val: any, ind: any) => {
                         val.no = ind + 1;
                         return val;
                     });
@@ -43,7 +43,7 @@ const ProjectsTable = () => {
             })
 
     }, [currentPage, pageSize]);
-    const sendDeleteRequest = (ids: []) => {
+    const sendDeleteRequest = (ids: any) => {
         fetch(config.backend_url + `projects`, {
             method: 'DELETE',
             headers: {
@@ -61,7 +61,7 @@ const ProjectsTable = () => {
                 } else {
                     // const parsedResponse = JSON.parse(data as string) as any[];     
                     if (res == true) {
-                        setData(data.filter(val => !ids.includes(val.id)));
+                        setData(data.filter((val) => !ids.includes(val["id"])));
                         console.log(data);
                     }
                     setRowsSelected([]);
@@ -74,7 +74,7 @@ const ProjectsTable = () => {
     };
     const customTheme = createTheme({
         palette: {
-            mode: theme
+            mode: (theme ? theme : 'dark') as PaletteMode
         },
         components: {
             MuiFormControl: {
@@ -183,7 +183,7 @@ const ProjectsTable = () => {
             options: {
                 sort: false,
                 filter: false,
-                customBodyRender: (value, tableMeta, updateValue) => {
+                customBodyRender: (value: any, tableMeta: any, updateValue: any) => {
                     return (
                         <div>
                             <IconButton
@@ -229,7 +229,7 @@ const ProjectsTable = () => {
                                 onRowsDelete: (rowsDeleted) => {
                                     const del = rowsDeleted.lookup;
                                     // console.log(Object.keys(del).map(val => data[val].id));
-                                    sendDeleteRequest(Object.keys(del).map(val => data[val].id))
+                                    sendDeleteRequest(Object.keys(del).map(val => data[Number(val)]["id"]))
                                     return false;
                                     // rowsDeleted.
                                     // return false;

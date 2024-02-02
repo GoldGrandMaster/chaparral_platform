@@ -4,10 +4,9 @@
 use reqwest;
 use std::collections::HashMap;
 use std::process::Command;
-
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-async fn login(username: &str, password: &str, rememberMe: bool) -> Result<String, String> {
+async fn login(username: &str, password: &str) -> Result<String, String> {
     let mut map = HashMap::new();
     map.insert("username", username);
     map.insert("password", password);

@@ -36,14 +36,14 @@ const FileSelectorWrapper = styled.div(() => ({
 export default function DashboardPage() {
 
   useEffect(() => {
-    const handleFileDrop = (event) => {
+    const handleFileDrop = (event: any) => {
       event.preventDefault();
 
       const filePath = event.dataTransfer.files[0].path;
       console.log(`Got file path: ${filePath}`);
       callCli(filePath);
     };
-    async function callCli(resPath: string): void {
+    async function callCli(resPath: string) {
       console.log(`Obtained file/folder path: ${resPath}`);
 
       // try {

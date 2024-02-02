@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
@@ -43,7 +43,7 @@ const Confirm = () => {
   const handleConfirm = (e: any) => {
     e.preventDefault();
 
-    fetch(`activate/key=${activationKey.value}`, {
+    fetch(config.backend_url + 'activate?key=' + activationKey.value, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -51,6 +51,7 @@ const Confirm = () => {
     })
       .then((response: Response) => {
         if (!response.ok) return response.json();
+        else return response.text();
       })
       .then((data: any) => {
         if (data) {
@@ -61,13 +62,14 @@ const Confirm = () => {
           }
         } else {
           navigate('/login');
-          toast.success('Successfully created a new account!');
+          toast.success('Account was activated!');
         }
       }).catch((error: Error) => {
         console.error('Error:', error);
         toast.error('An error occurred while communicating with the server.');
       });
   }
+  useEffect(() => console.log(123), []);
 
   return (
     <Form onSubmit={handleConfirm}>

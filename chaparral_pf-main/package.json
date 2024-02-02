@@ -166,5 +166,7 @@
   },
   "cacheDirectories": [
     "node_modules"
-  ]
+  ],
+  "main": "jest.conf.js",
+  "author": ""
 }

@@ -88,17 +88,8 @@ management:
           enabled: true
 
 spring:
-  mail:
-    host: "smtp.gmail.com"  # Replace with your SMTP server host
-    port: 587  # Replace with your SMTP server port
-    username: crissynguyen0204@gmail.com  # Replace with your SMTP username
-    password: Kic0328@  # Replace with your SMTP password
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+  sendgrid:
+    api-key: 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
   application:
     name: cha
   profiles:
@@ -170,7 +161,7 @@ jhipster:
   #   allow-credentials: true
   #   max-age: 1800
   mail:
-    from: cha@localhost
+    from: brightcn624@gmail.com
   api-docs:
     default-include-pattern: /api/**
     management-include-pattern: /management/**

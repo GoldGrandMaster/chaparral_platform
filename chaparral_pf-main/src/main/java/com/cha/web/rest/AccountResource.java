@@ -71,6 +71,7 @@ public class AccountResource {
      */
     @GetMapping("/activate")
     public Mono<Void> activateAccount(@RequestParam(value = "key") String key) {
+        log.debug(key);
         return userService
             .activateRegistration(key)
             .switchIfEmpty(Mono.error(new AccountResourceException("No user was found for this activation key")))
@@ -144,12 +145,12 @@ public class AccountResource {
     /**
      * {@code POST   /account/reset-password/init} : Send an email to reset the password of the user.
      *
-     * @param mail the mail of the user.
+     * @param email the mail of the user.
      */
     @PostMapping(path = "/account/reset-password/init")
-    public Mono<Void> requestPasswordReset(@RequestBody String mail) {
+    public Mono<Void> requestPasswordReset(@RequestBody String email) {
         return userService
-            .requestPasswordReset(mail)
+            .requestPasswordReset(email)
             .doOnSuccess(user -> {
                 if (Objects.nonNull(user)) {
                     mailService.sendPasswordResetMail(user);
