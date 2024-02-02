@@ -49,7 +49,20 @@ sudo -i -u postgres
 psql
 ALTER USER postgres PASSWORD 'admin';
 ```
+ - Set keys and urls
 
+    application.yml
+    ```
+    spring:
+        sendgrid:
+            api-key: # sendgrid key here
+    ```
+    config.tsx
+    ```
+    const config = {
+        backend_url: 'http://localhost:8080/api/',
+    };
+    ```
 ## Running project
 - Fronend
 ```
@@ -60,3 +73,9 @@ npm run tauri dev //App
 ```
 ./gradlew -x webapp
 ```
+
+- open on web
+```
+localhost:1420
+```
+
