@@ -89,7 +89,7 @@ management:
 
 spring:
   sendgrid:
-    api-key: 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 # sendgrid key here
+    api-key:  # sendgrid key here
   application:
     name: cha
   profiles:
