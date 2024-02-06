@@ -20,7 +20,7 @@ liquibase {
     main {
       driver "org.postgresql.Driver"
       url "jdbc:postgresql://localhost:5432/cha"
-      username "cha"
+      username "postgres"
       changelogFile "src/main/resources/config/liquibase/master.xml"
       logLevel "debug"
       classpath "src/main/resources/"
@@ -28,7 +28,7 @@ liquibase {
     diffLog {
       driver "org.postgresql.Driver"
       url "jdbc:postgresql://localhost:5432/cha"
-      username "cha"
+      username "postgres"
       changelogFile project.ext.diffChangelogFile
       logLevel "debug"
       classpath "$buildDir/classes/java/main"

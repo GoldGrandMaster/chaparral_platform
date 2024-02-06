@@ -42,8 +42,8 @@ spring:
     password:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/cha
-    username: cha
-    password:
+    username: postgres
+    password: admin
   thymeleaf:
     cache: true
 
