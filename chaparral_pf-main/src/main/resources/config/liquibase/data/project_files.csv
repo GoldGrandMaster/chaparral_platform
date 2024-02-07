@@ -1,0 +1,5 @@
+id;project_id;file_name;destination_path;batch_job_id;batch_status
+1;1;abc.txt;s3:\\sdffdf;1;done
+2;1;abc32.txt;s3:\\sdasdfsdffdf;1;done
+3;2;abc3asf2.txt;s3:\\sdasdfsdffdf;1;done
+4;2;abc3asdf2.txt;s3:\\sdasdfsdffdf;1;done

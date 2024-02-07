@@ -62,6 +62,7 @@ export default function DashboardPage() {
     };
 
     const setupFileDropListener = () => {
+      console.log('setup filedrop');
       document.addEventListener('drop', handleFileDrop);
     };
 

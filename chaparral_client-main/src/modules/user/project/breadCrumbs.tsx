@@ -27,7 +27,7 @@ function Page() {
         {pathnames.map((value, index) => {
           const last = index === pathnames.length - 1;
 
-          return <Chip component="span" label={decodeURIComponent(value)} onClick={() => !last && handleClick(index)} clickable={true} />
+          return <Chip key={index} component="span" label={decodeURIComponent(value)} onClick={() => !last && handleClick(index)} clickable={true} />
         })}
       </Breadcrumbs>
     </ThemeProvider>

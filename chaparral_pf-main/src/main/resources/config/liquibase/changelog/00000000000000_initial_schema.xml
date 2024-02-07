@@ -53,6 +53,21 @@
             <column name="created_date" type="timestamp"/>
             <column name="last_modified_date" type="timestamp"/>
         </createTable>
+
+
+        <createTable tableName="jhi_project_files">
+            <column name="id" type="bigint" autoIncrement="true" startWith="5">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project_id" type="bigint"/>
+            <column name="file_name" type="varchar(255)"/>
+            <column name="destination_path" type="varchar(255)"/>
+            <column name="batch_job_id" type="bigint"/>
+            <column name="batch_status" type="varchar(10)"/>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+
         <createTable tableName="jhi_user_authority">
             <column name="user_id" type="bigint">
                 <constraints nullable="false"/>
@@ -62,13 +77,19 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="id, user_id" tableName="jhi_project"/>
+        <addPrimaryKey columnNames="id" tableName="jhi_project"/>
+        <addPrimaryKey columnNames="id" tableName="jhi_project_files"/>
         <addPrimaryKey columnNames="user_id, authority_name" tableName="jhi_user_authority"/>
         <addForeignKeyConstraint baseColumnNames="user_id"
                                  baseTableName="jhi_project"
                                  constraintName="fk_authority_name"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"/>
+        <addForeignKeyConstraint baseColumnNames="project_id"
+                                 baseTableName="jhi_project_files"
+                                 constraintName="fk_project_file"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_project"/>
         <addForeignKeyConstraint baseColumnNames="authority_name"
                                  baseTableName="jhi_user_authority"
                                  constraintName="fk_authority_name"
@@ -115,7 +136,17 @@
             <column name="user_id" type="numeric"/>
             <column name="created_date" type="timestamp"/>
         </loadData>
+        <loadData
+            file="config/liquibase/data/project_files.csv"
+            separator=";"
+            tableName="jhi_project_files"
+            usePreparedStatements="true">
+            <column name="project_id" type="numeric"/>
+            <column name="created_date" type="timestamp"/>
+        </loadData>
         <dropDefaultValue tableName="jhi_user" columnName="created_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="jhi_project" columnName="created_date" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="jhi_project_files" columnName="created_date" columnDataType="${datetimeType}"/>
     </changeSet>
 
     <changeSet author="jhipster" id="00000000000002" context="test">
