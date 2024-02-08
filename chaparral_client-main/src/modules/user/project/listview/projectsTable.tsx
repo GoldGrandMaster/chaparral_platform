@@ -6,7 +6,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import config from '@/config';
 import { toast } from 'react-toastify';
 import { IconButton, PaletteMode } from '@mui/material';
-import { EditIcon } from 'lucide-react';
+import { EditIcon, FileIcon, UploadIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 const ProjectsTable = () => {
@@ -87,7 +87,7 @@ const ProjectsTable = () => {
             MuiTableCell: {
                 styleOverrides: {
                     root: {
-                        fontSize: "20px",
+                        fontSize: "20px"
                     }
                 }
             },
@@ -194,6 +194,15 @@ const ProjectsTable = () => {
                                 }}
                             >
                                 <EditIcon />
+                            </IconButton>
+                            <IconButton
+                                onClick={(e) => {
+                                    localStorage.setItem("currentProject", JSON.stringify(tableMeta.rowData));
+                                    navigate('upload');
+                                    // handleEdit(tableMeta.rowData[0]);
+                                }}
+                            >
+                                <UploadIcon />
                             </IconButton>
                         </div>
                     )

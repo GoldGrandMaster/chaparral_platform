@@ -12,6 +12,7 @@ import PrivateRoute from "@/common/misc/privateroute";
 import ProjectListviewPage from "./modules/user/project/listview/projectListviewPage";
 import ProjectFormPage from "@/modules/user/project/form/projectFormPage";
 import ProjectEditFormPage from "@/modules/user/project/edit/projectEditFormPage";
+import ProjectFileUploadPage from "./modules/user/project/upload/projectFileUploadPage";
 const AppRoutes = () => {
   return (
     <div className="view-routes">
@@ -51,6 +52,14 @@ const AppRoutes = () => {
             element={
               <PrivateRoute>
                 {<ProjectEditFormPage />}
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/project/upload"
+            element={
+              <PrivateRoute>
+                {<ProjectFileUploadPage />}
               </PrivateRoute>
             }
           />
