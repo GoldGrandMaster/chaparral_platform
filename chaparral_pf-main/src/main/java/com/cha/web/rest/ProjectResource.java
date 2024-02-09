@@ -138,14 +138,21 @@ public class ProjectResource {
         }
         return file.flatMap(filePart -> {
             // Save the file to the directory
+            String filepath = filePart.filename();
+            System.out.println(filepath);
+            if (filepath.contains("/")) {
+                try {
+                    Files.createDirectories(directory.resolve(filepath.substring(0,filepath.lastIndexOf('/'))));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             return filePart.transferTo(directory.resolve(filePart.filename()))
                 .then(
                     Mono.just("File uploaded successfully")
                 )
                 .flatMap(str -> {
-                    System.out.println("Received file: " + filePart.filename());
                     return proj_id.flatMap(id -> {
-                        System.out.println("project_id: " + id);
                         ProjectFiles projectFiles = new ProjectFiles(Long.valueOf(id),
                             filePart.filename(),
                             "http://s3",

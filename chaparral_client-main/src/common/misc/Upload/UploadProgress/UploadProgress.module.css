@@ -3,8 +3,8 @@
   bottom: 0;
   right: 0;
   width: 400px;
-  overflow: scroll;
-  max-height: 400px;
+  overflow-x: hidden;
+  max-height: 700px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   border-width: 3px;

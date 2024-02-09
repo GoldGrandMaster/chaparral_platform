@@ -46,7 +46,7 @@ const UploadItem = (props: any) => {
   }, [status])
   console.log(file);
   return (
-    <div className={Styles.wrapperItem}>
+    <div className={Styles.wrapperItem + " bg-white dark:bg-black"}>
       <div className={Styles.leftSide}>
         <div className={Styles.progressBar}>
           <div style={{ width: `${progress}%` }} />

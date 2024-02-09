@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Input } from '@/common/components/ui/input';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/common/components/ui/button';
 import styled from 'styled-components';
 import { useNavigate } from "react-router-dom";
-import config from '@/config';
-import { FileUploader } from 'react-drag-drop-files';
-import { toast } from 'react-toastify';
+import Dropzone from 'react-dropzone';
 import UploadProgress from '@/common/misc/Upload/UploadProgress/UploadProgress';
 import { useDispatch } from 'react-redux';
 import { setUploadFile } from '@/redux/uploadFile/uploadFile.actions';
+import { EditIcon, FileIcon, FolderIcon, UploadIcon } from 'lucide-react';
 const Label = styled.label`
   font-weight: bold;
 `;
@@ -23,14 +21,17 @@ const StyledForm = styled.div`
 const ProjectFileUploadForm = () => {
     const dispatch = useDispatch();
     const [curProject, setCurProject] = useState([]);
+    const [isInDropzone, setIsInDropzone] = useState(true);
     const [files, setFiles] = useState([]);
-    const navigate = useNavigate();
+    const inputRef = useRef<HTMLInputElement>(null);
     const handleFileUpload = (files: any) => {
+        console.log(files);
+
         setFiles(files);
-    }
-    const handleSubmit = () => {
         dispatch(setUploadFile(files, curProject[1]));
         setFiles([]);
+    }
+    const handleSubmit = () => {
     }
     /*
     const handleSubmit = () => {
@@ -73,24 +74,60 @@ const ProjectFileUploadForm = () => {
         setCurProject(curProj);
     }, [])
     return (
-        <StyledForm>
+        <div className='flex flex-col gap-3 h-full'>
             <p style={{ fontSize: "30px" }}>{curProject[2]}</p>
             <h1>{curProject[3]}</h1>
-            <div>
-                <FileUploader
-                    multiple={true}
-                    handleChange={handleFileUpload}
-                    label='Upload files'
-                />
-                {files.length > 0 &&
-                    Array.from(files).map((file: File, ind: number) => <div key={ind}>- {file.name}</div>)
-                }
+            <div className='flex gap-3'>
+                <Button className="bg-primary-foreground border-[1px] border-solid border-tertiary text-primary"
+                    onClick={() => {
+                        inputRef.current?.removeAttribute('directory');
+                        inputRef.current?.removeAttribute('webkitdirectory');
+                        inputRef.current?.removeAttribute('mozdirectory');
+                        inputRef.current?.click()
+                    }}>
+                    <FileIcon></FileIcon>
+                    Upload files
+                </Button>
+                <Button className="bg-primary-foreground border-[1px] border-solid border-tertiary text-primary"
+                    onClick={() => {
+                        inputRef.current?.setAttribute('directory', '');
+                        inputRef.current?.setAttribute('webkitdirectory', '');
+                        inputRef.current?.setAttribute('mozdirectory', '');
+                        inputRef.current?.click()
+                    }}>
+                    <FolderIcon></FolderIcon>
+                    Upload folder
+                </Button>
             </div>
-            <Button className="bg-primary-foreground border-[1px] border-solid border-tertiary text-primary" onClick={handleSubmit}>
-                Upload files.
-            </Button>
+
+            <Dropzone
+                onDrop={handleFileUpload}
+                onDragEnter={() => setIsInDropzone(true)}
+                onDragLeave={() => setIsInDropzone(false)}
+                onDropAccepted={() => setIsInDropzone(false)}
+                noClick
+            >
+                {({ getRootProps, getInputProps }) => (
+                    <div {...getRootProps()} className='h-full pb-[35px]'>
+                        <input {...getInputProps()} ref={inputRef} />
+                        <div
+                            className={`relative flex flex-col gap-[16px] h-full
+                        ${isInDropzone ? "border rounded-xl border-4 border-blue-500 dark:bg-gray-800 bg-gray-100" : ""}`}
+                        >
+                            {files.length > 0 &&
+                                Array.from(files).map((file: File, ind: number) => <div key={ind}>- {file.name}</div>)
+                            }
+                            {isInDropzone &&
+                                <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>
+                                    Drag and Drop files or folders
+                                </div>
+                            }
+                        </div >
+                    </div>
+                )}
+            </Dropzone>
             <UploadProgress />
-        </StyledForm>
+        </div>
     );
 };
 

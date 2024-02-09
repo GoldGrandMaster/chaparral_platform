@@ -47,7 +47,8 @@ export const uploadFile = (files: any) => (dispatch: any) => {
           cancelToken: file.cancelSource.token,
           onUploadProgress: progress => {
             const { loaded, total } = progress
-
+            console.log(loaded);
+            console.log(total);
             const percentageProgress = Math.floor((loaded / (total != undefined ? total : 1)) * 100)
             dispatch(setUploadProgress(file.id, percentageProgress))
           },

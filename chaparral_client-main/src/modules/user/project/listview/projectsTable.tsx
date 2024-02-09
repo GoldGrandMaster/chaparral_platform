@@ -6,7 +6,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import config from '@/config';
 import { toast } from 'react-toastify';
 import { IconButton, PaletteMode } from '@mui/material';
-import { EditIcon, FileIcon, UploadIcon } from 'lucide-react';
+import { EditIcon, UploadIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 const ProjectsTable = () => {
