@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/common/components/ui/button';
 import styled from 'styled-components';
 import { useNavigate } from "react-router-dom";
-import Dropzone from 'react-dropzone';
+import Dropzone, { useDropzone } from 'react-dropzone';
 import UploadProgress from '@/common/misc/Upload/UploadProgress/UploadProgress';
 import { useDispatch } from 'react-redux';
 import { setUploadFile } from '@/redux/uploadFile/uploadFile.actions';
 import { EditIcon, FileIcon, FolderIcon, UploadIcon } from 'lucide-react';
+
 const Label = styled.label`
   font-weight: bold;
 `;
@@ -21,54 +22,59 @@ const StyledForm = styled.div`
 const ProjectFileUploadForm = () => {
     const dispatch = useDispatch();
     const [curProject, setCurProject] = useState([]);
-    const [isInDropzone, setIsInDropzone] = useState(true);
-    const [files, setFiles] = useState([]);
+    const [isInDropzone, setIsInDropzone] = useState(false);
+    const [files, setFiles] = useState<File[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
-    const handleFileUpload = (files: any) => {
-        console.log(files);
-
-        setFiles(files);
-        dispatch(setUploadFile(files, curProject[1]));
-        setFiles([]);
-    }
-    const handleSubmit = () => {
-    }
-    /*
-    const handleSubmit = () => {
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-            // Handle case where token is not available
-            return;
+    const filterdFiles: File[] = [];
+    const handleFileUpload = (filelist: File[]) => {
+        console.log(filelist);
+        for (let i = 0; i < filelist.length; i++) {
+            if (filelist[i].name != 'analysis.tdf' && filelist[i].name != 'analysis.tdf_bin') continue;
+            let path: string = Object.getOwnPropertyDescriptor(filelist[i], 'path')?.value;
+            if (path[0] == '/') path = path.substring(1);
+            if (path.indexOf('/') == path.lastIndexOf('/')) filterdFiles.push(filelist[i]);
+            else break;
         }
-        const data = new FormData();
-        data.append('project_id', JSON.parse(localStorage.getItem('currentProject') || "")[1]);
-        console.log(files);
-        for (let i = 0; i < files.length; i++) data.append('files', files[i]);
-        // data.append('files', files);
-        const requestOptions = {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: data
-        };
+        // setFiles(filt);
+        dispatch(setUploadFile(filterdFiles, curProject[1]));
+        // setFiles([]);
+    }
 
-        fetch(config.backend_url + 'projects/upload', requestOptions)
-            .then(response => {
-                if (response.ok) return response.json();
-                throw new Error("There was an error");
-            })
-            .then(res => {
-                // navigate('/user/project/');
-                toast.success("Successfully uploaded");
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                toast.error("There was an error uploading files")
-            });
-    };
-    */
+    // const handleSubmit = () => {
+    //     const token = localStorage.getItem('token');
+
+    //     if (!token) {
+    //         // Handle case where token is not available
+    //         return;
+    //     }
+    //     const data = new FormData();
+    //     data.append('project_id', JSON.parse(localStorage.getItem('currentProject') || "")[1]);
+    //     console.log(files);
+    //     for (let i = 0; i < files.length; i++) data.append('files', files[i]);
+    //     // data.append('files', files);
+    //     const requestOptions = {
+    //         method: 'POST',
+    //         headers: {
+    //             'Authorization': `Bearer ${token}`
+    //         },
+    //         body: data
+    //     };
+
+    //     fetch(config.backend_url + 'projects/upload', requestOptions)
+    //         .then(response => {
+    //             if (response.ok) return response.json();
+    //             throw new Error("There was an error");
+    //         })
+    //         .then(res => {
+    //             // navigate('/user/project/');
+    //             toast.success("Successfully uploaded");
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //             toast.error("There was an error uploading files")
+    //         });
+    // };
+
     useEffect(() => {
         const curProj = JSON.parse(localStorage.getItem('currentProject') || "");
         setCurProject(curProj);
@@ -99,7 +105,7 @@ const ProjectFileUploadForm = () => {
                     Upload folder
                 </Button>
             </div>
-
+            {/* <MyDropzone></MyDropzone> */}
             <Dropzone
                 onDrop={handleFileUpload}
                 onDragEnter={() => setIsInDropzone(true)}

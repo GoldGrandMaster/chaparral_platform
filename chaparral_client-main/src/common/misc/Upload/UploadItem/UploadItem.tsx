@@ -44,7 +44,6 @@ const UploadItem = (props: any) => {
 
     return null
   }, [status])
-  console.log(file);
   return (
     <div className={Styles.wrapperItem + " bg-white dark:bg-black"}>
       <div className={Styles.leftSide}>

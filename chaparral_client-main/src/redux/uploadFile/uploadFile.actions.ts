@@ -32,7 +32,9 @@ export const uploadFile = (files: any) => (dispatch: any) => {
   if (files.length) {
     files.forEach(async (file: any) => {
       const formPayload = new FormData()
-      formPayload.append('file', file.file)
+      let filepath: string = Object.getOwnPropertyDescriptor(file.file, 'path')?.value;
+      if (filepath[0] == '/') filepath = filepath.substring(1);
+      formPayload.append('file', file.file, filepath)
       formPayload.append('project_id', file.project_id)
 
       try {
@@ -47,8 +49,6 @@ export const uploadFile = (files: any) => (dispatch: any) => {
           cancelToken: file.cancelSource.token,
           onUploadProgress: progress => {
             const { loaded, total } = progress
-            console.log(loaded);
-            console.log(total);
             const percentageProgress = Math.floor((loaded / (total != undefined ? total : 1)) * 100)
             dispatch(setUploadProgress(file.id, percentageProgress))
           },
