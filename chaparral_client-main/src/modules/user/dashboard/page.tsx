@@ -56,6 +56,22 @@ export default function DashboardPage() {
       //   console.error(`Error: ${error.message}`);
       // }
     }
+
+    // useEffect(() => {
+    //   let unlisten: any;
+    //   (async function listenForFileDrop() {
+    //     unlisten = await listen<string>('tauri://file-drop', (event) => {
+    //       console.log(`Got file path: ${event.payload}`);
+    //       invoke("call_cli", {resPath: event.payload.toString()});
+    //     });
+    //   })()
+    //   return () => {
+    //     if (unlisten) {
+    //       unlisten();
+    //       console.log('File drop listener has been removed.');
+    //     }
+    //   };;
+    // }, []);
     const removeFileDropListener = () => {
       document.removeEventListener('drop', handleFileDrop);
       console.log('File drop listener has been removed.');

@@ -32,8 +32,8 @@ const ProjectFileUploadForm = () => {
             if (filelist[i].name != 'analysis.tdf' && filelist[i].name != 'analysis.tdf_bin') continue;
             let path: string = Object.getOwnPropertyDescriptor(filelist[i], 'path')?.value;
             if (path[0] == '/') path = path.substring(1);
-            if (path.indexOf('/') == path.lastIndexOf('/')) filterdFiles.push(filelist[i]);
-            else break;
+            if (path.indexOf('/') == path.lastIndexOf('/'))
+                filterdFiles.push(filelist[i]);
         }
         // setFiles(filt);
         dispatch(setUploadFile(filterdFiles, curProject[1]));

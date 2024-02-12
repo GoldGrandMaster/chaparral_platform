@@ -167,6 +167,7 @@ dependencies {
         implementation platform("tech.jhipster:jhipster-dependencies:${jhipsterDependenciesVersion}")
     }
     implementation 'com.sendgrid:sendgrid-java:4.10.1'
+    implementation ''
     // Use ", version: jhipsterDependenciesVersion, changing: true" if you want
     // to use a SNAPSHOT release instead of a stable release
     implementation "tech.jhipster:jhipster-framework"
