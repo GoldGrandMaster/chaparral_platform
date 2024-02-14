@@ -2,17 +2,12 @@ import { styled } from "styled-components";
 import BreadCrumbs from "../breadCrumbs";
 import ProjectFileUploadForm from "./projectFileUploadForm";
 
-const Wrapper = styled.div({
-    margin: '20px 0px 0px 20px'
-});
-
 const ProjectFileUploadPage = () => {
     return (
-        <Wrapper>
+        <div className="p-5 h-full">
             <BreadCrumbs />
-            <br />
             <ProjectFileUploadForm />
-        </Wrapper>
+        </div>
     );
 };
 

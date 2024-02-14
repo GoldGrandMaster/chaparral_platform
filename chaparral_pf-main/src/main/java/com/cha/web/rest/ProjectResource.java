@@ -2,16 +2,17 @@ package com.cha.web.rest;
 
 
 import com.cha.domain.Project;
-import com.cha.domain.ProjectFiles;
+import com.cha.domain.SuccessResponse;
 import com.cha.domain.User;
 import com.cha.repository.ProjectFilesRepository;
 import com.cha.repository.ProjectRepository;
 import com.cha.repository.UserRepository;
 import com.cha.security.SecurityUtils;
+import com.cha.service.AWSS3FileStorageService;
+import com.cha.utils.FileUtils;
 import com.cha.web.rest.vm.ProjectVM;
 import jakarta.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -19,11 +20,6 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
 @RestController
@@ -33,11 +29,13 @@ public class ProjectResource {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ProjectFilesRepository projectFilesRepository;
+    private final AWSS3FileStorageService fileStorageService;
 
-    public ProjectResource(ProjectRepository projectRepository, UserRepository userRepository, ProjectFilesRepository projectFilesRepository) {
+    public ProjectResource(ProjectRepository projectRepository, UserRepository userRepository, ProjectFilesRepository projectFilesRepository, AWSS3FileStorageService fileStorageService) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.projectFilesRepository = projectFilesRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     private Mono<Long> getUserIdFromLogin(String login) {
@@ -128,8 +126,9 @@ public class ProjectResource {
      */
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, path = "/upload")
-    public Mono<Boolean> uploadFiles(@RequestPart("file") Mono<FilePart> file,
-                                     @RequestPart("project_id") Mono<String> proj_id) {
+    public Mono<SuccessResponse> uploadFiles(@RequestPart("file") Mono<FilePart> file,
+                                             @RequestPart("project_id") Mono<String> proj_id) {
+        /*
         Path directory = Paths.get("upload");
         try {
             Files.createDirectories(directory);
@@ -138,14 +137,21 @@ public class ProjectResource {
         }
         return file.flatMap(filePart -> {
             // Save the file to the directory
+            String filepath = filePart.filename();
+            System.out.println(filepath);
+            if (filepath.contains("/")) {
+                try {
+                    Files.createDirectories(directory.resolve(filepath.substring(0,filepath.lastIndexOf('/'))));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             return filePart.transferTo(directory.resolve(filePart.filename()))
                 .then(
                     Mono.just("File uploaded successfully")
                 )
                 .flatMap(str -> {
-                    System.out.println("Received file: " + filePart.filename());
                     return proj_id.flatMap(id -> {
-                        System.out.println("project_id: " + id);
                         ProjectFiles projectFiles = new ProjectFiles(Long.valueOf(id),
                             filePart.filename(),
                             "http://s3",
@@ -163,5 +169,16 @@ public class ProjectResource {
                 })
                 .onErrorResume(throwable -> Mono.just(false));
         });
+         */
+        return file
+            .map(f -> {
+                FileUtils.filePartValidator(f);
+                return f;
+            })
+            .flatMap(fileStorageService::uploadObject)
+            .map(fileResponse -> {
+                System.out.println(123123123);
+                return new SuccessResponse(fileResponse, "Upload successfully");
+            });
     }
 }
