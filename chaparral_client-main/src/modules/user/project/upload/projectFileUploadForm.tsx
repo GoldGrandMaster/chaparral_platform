@@ -21,7 +21,7 @@ const StyledForm = styled.div`
 
 const ProjectFileUploadForm = () => {
     const dispatch = useDispatch();
-    const [curProject, setCurProject] = useState([]);
+    const [curProject, setCurProject] = useState<any>();
     const [isInDropzone, setIsInDropzone] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -36,7 +36,7 @@ const ProjectFileUploadForm = () => {
                 filterdFiles.push(filelist[i]);
         }
         // setFiles(filt);
-        dispatch(setUploadFile(filterdFiles, curProject[1]));
+        dispatch(setUploadFile(filterdFiles, curProject.id));
         // setFiles([]);
     }
 
@@ -77,14 +77,15 @@ const ProjectFileUploadForm = () => {
 
     useEffect(() => {
         const curProj = JSON.parse(localStorage.getItem('currentProject') || "");
+        console.log(curProj);
         setCurProject(curProj);
     }, [])
     return (
         <div className='flex flex-col gap-3 h-full'>
-            <p style={{ fontSize: "30px" }}>{curProject[2]}</p>
-            <h1>{curProject[3]}</h1>
+            <p style={{ fontSize: "30px" }}>{curProject && curProject.name}</p>
+            <h1>{curProject && curProject.description}</h1>
             <div className='flex gap-3'>
-                <Button className="bg-primary-foreground border-[1px] border-solid border-tertiary text-primary"
+                <Button
                     onClick={() => {
                         inputRef.current?.removeAttribute('directory');
                         inputRef.current?.removeAttribute('webkitdirectory');
@@ -94,7 +95,7 @@ const ProjectFileUploadForm = () => {
                     <FileIcon></FileIcon>
                     Upload files
                 </Button>
-                <Button className="bg-primary-foreground border-[1px] border-solid border-tertiary text-primary"
+                <Button
                     onClick={() => {
                         inputRef.current?.setAttribute('directory', '');
                         inputRef.current?.setAttribute('webkitdirectory', '');

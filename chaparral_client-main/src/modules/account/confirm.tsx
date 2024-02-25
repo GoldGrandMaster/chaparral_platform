@@ -1,12 +1,9 @@
 import React, { useEffect } from "react";
-import "react-toastify/dist/ReactToastify.css";
-import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import { ModalBody, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
-
+import { useToast } from "@/common/components/ui/use-toast"
 import generateState from "../../common/misc/stateGenerator";
 import config from "@/config";
 
@@ -37,7 +34,7 @@ const ModalFooter = styled.div(() => ({
 
 const Confirm = () => {
   const navigate = useNavigate();
-
+  const { toast } = useToast();
   const [activationKey] = generateState(['']);
 
   const handleConfirm = (e: any) => {
@@ -51,64 +48,47 @@ const Confirm = () => {
     })
       .then((response: Response) => {
         if (!response.ok) return response.json();
-        else return response.text();
+        return response.text();
       })
       .then((data: any) => {
-        if (data) {
-          if (data.detail) {
-            toast.error(data.detail);
-          } else {
-            toast.error('Something went wrong.');
-          }
-        } else {
+        if (data)
+          toast({
+            description: data.detail,
+            variant: 'error'
+          });
+        else {
           navigate('/login');
-          toast.success('Account was activated!');
+          toast({
+            description: "Account was activated",
+            variant: 'success'
+          });
         }
-      }).catch((error: Error) => {
-        console.error('Error:', error);
-        toast.error('An error occurred while communicating with the server.');
       });
   }
-  useEffect(() => console.log(123), []);
 
   return (
     <Form onSubmit={handleConfirm}>
-      <Header id="login-title" data-cy="loginTitle">
-        Confirm account
-      </Header>
+      <Header>Confirm account</Header>
       <p style={{ marginBottom: 20, fontSize: '0.8rem' }}>Please check your email for the activation key.</p>
-      <ModalBody>
-        <Row>
-          <Col
-            md="12"
-            onChange={(e: any) => {
-              switch (e.target.name) {
-                case "activation-key":
-                  activationKey.set(e.target.value.trim());
-                  break;
-              }
-              e.stopPropagation();
-            }}
-          >
-            <Input
-              name="activation-key"
-              placeholder="Activation key"
-              required
-              autoFocus
-              data-cy="activation-key"
-              value={activationKey.value}
-              style={{ width: "225px" }}
-            />
-            <br />
-          </Col>
-        </Row>
+      <div>
+        <Input
+          name="activation-key"
+          placeholder="Activation key"
+          required
+          autoFocus
+          data-cy="activation-key"
+          value={activationKey.value}
+          style={{ width: "225px" }}
+          onChange={(e: any) => activationKey.set(e.target.value.trim())}
+        />
+        <br />
         <BottomLinks>
           <Link to="/forgot-password" data-cy="forgetYourPasswordSelector">
             Forgot password?
           </Link>
           <Link to="/signup">Sign up</Link>
         </BottomLinks>
-      </ModalBody>
+      </div>
       <ModalFooter>
         <Button color="primary" type="submit" data-cy="submit">
           Submit

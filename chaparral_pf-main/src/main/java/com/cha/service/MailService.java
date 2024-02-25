@@ -1,6 +1,7 @@
 package com.cha.service;
 
 import com.cha.domain.User;
+import com.cha.security.SecurityUtils;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -8,24 +9,20 @@ import com.sendgrid.SendGridAPI;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import reactor.core.publisher.Mono;
 import tech.jhipster.config.JHipsterProperties;
+
 /**
  * Service for sending emails asynchronously.
  */
@@ -46,18 +43,23 @@ public class MailService {
 
     private final SpringTemplateEngine templateEngine;
 
+    private final UserService userService;
+
+
     @Autowired
     SendGridAPI sendGridAPI;
+
     public MailService(
         JHipsterProperties jHipsterProperties,
 //        JavaMailSender javaMailSender,
         MessageSource messageSource,
-        SpringTemplateEngine templateEngine
-    ) {
+        SpringTemplateEngine templateEngine,
+        UserService userService) {
         this.jHipsterProperties = jHipsterProperties;
 //        this.javaMailSender = javaMailSender;
         this.messageSource = messageSource;
         this.templateEngine = templateEngine;
+        this.userService = userService;
     }
 
     public void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
@@ -127,6 +129,21 @@ public class MailService {
         this.sendEmailSync(user.getEmail(), subject, content, false, true);
     }
 
+    private void sendInviteMailFromTemplateSync(User user, String templateName, String titleKey, String orgName) {
+        if (user.getEmail() == null) {
+            log.debug("Email doesn't exist for user '{}'", user.getLogin());
+            return;
+        }
+        Locale locale = Locale.forLanguageTag(user.getLangKey());
+        Context context = new Context(locale);
+        context.setVariable(USER, user);
+        context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+        context.setVariable("org_name", orgName);
+        String content = templateEngine.process(templateName, context);
+        String subject = messageSource.getMessage(titleKey, null, locale);
+        this.sendEmailSync(user.getEmail(), subject, content, false, true);
+    }
+
     public void sendActivationEmail(User user) {
         log.debug("Sending activation email to '{}'", user.getEmail());
         this.sendEmailFromTemplate(user, "mail/activationEmail", "email.activation.title");
@@ -140,5 +157,14 @@ public class MailService {
     public void sendPasswordResetMail(User user) {
         log.debug("Sending password reset email to '{}'", user.getEmail());
         this.sendEmailFromTemplate(user, "mail/passwordResetEmail", "email.reset.title");
+    }
+
+    public void sendInvitationMail(User user) {
+        log.debug("Sending invitation reset email to '{}'", user.getEmail());
+        SecurityUtils
+            .getCurrentUserLogin()
+            .subscribe(login -> {
+//                this.sendInviteMailFromTemplateSync(user, "mail/inviteEmail", "email.invite.title", );
+            });
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * A user.
@@ -17,7 +18,8 @@ public class ProjectFiles extends AbstractAuditingEntity<Long> implements Serial
 
     @Id
     private Long id;
-
+    @NotNull
+    private Long projectId;
     @Size(min = 1, max = 255)
     private String fileName;
     @Size(min = 1, max = 10)
@@ -25,10 +27,8 @@ public class ProjectFiles extends AbstractAuditingEntity<Long> implements Serial
     @Size(min = 1, max = 255)
     private String destinationPath;
     @NotNull
-    private Long projectId;
-    @NotNull
-    private Long batchJobId;
-    public ProjectFiles(Long projectId, String fileName, String destinationPath, Long batchJobId, String batchStatus) {
+    private UUID batchJobId;
+    public ProjectFiles(Long projectId, String fileName, String destinationPath, UUID batchJobId, String batchStatus) {
         this.fileName = fileName;
         this.batchStatus = batchStatus;
         this.destinationPath = destinationPath;
@@ -102,11 +102,11 @@ public class ProjectFiles extends AbstractAuditingEntity<Long> implements Serial
         this.destinationPath = destinationPath;
     }
 
-    public Long getBatchJobId() {
+    public UUID getBatchJobId() {
         return batchJobId;
     }
 
-    public void setBatchJobId(Long batchJobId) {
+    public void setBatchJobId(UUID batchJobId) {
         this.batchJobId = batchJobId;
     }
 }

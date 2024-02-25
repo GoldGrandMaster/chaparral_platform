@@ -1,7 +1,5 @@
-import "react-toastify/dist/ReactToastify.css";
-import { toast } from "react-toastify";
+import { useToast } from "@/common/components/ui/use-toast"
 import { Link, useNavigate } from "react-router-dom";
-import { ModalBody, Alert, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
@@ -37,13 +35,17 @@ const ModalFooter = styled.div(() => ({
 
 const Signup = () => {
   const navigate = useNavigate();
-
+  const { toast } = useToast();
   const [userName, email, password, passwordConfirm] = generateState(
     Array.apply(null, Array(5)).map(() => "")
   );
 
   const handleSignup = (e: any) => {
     e.preventDefault();
+    if (password.value != passwordConfirm.value) {
+      toast({ variant: 'error', description: 'Password must match' });
+      return;
+    }
 
     fetch(config.backend_url + 'register', {
       method: 'POST',
@@ -57,24 +59,24 @@ const Signup = () => {
         langKey: "en",
       }),
     })
-      .then((res: Response) => {
-        if (!res.ok) return res.json();
-      })
+      .then((res: Response) => res.json())
       .then((msg: any) => {
         if (msg) {
           if (msg.detail) {
-            toast.error(msg.detail);
+            toast({
+              description: msg.detail,
+              variant: 'error'
+            });
           } else {
-            toast.error("Something went wrong.");
+            toast({
+              description: "An error occurred while communicating with the server",
+              variant: 'error'
+            });
           }
         } else {
           navigate('/confirm')
         }
       })
-      .catch(error => {
-        console.error("Error:", error);
-        toast.error("An error occurred while processing your signup request.");
-      });
   };
 
   const handleInputChange = (e: any) => {
@@ -100,70 +102,64 @@ const Signup = () => {
       <Header id="login-title" data-cy="loginTitle">
         Create new account
       </Header>
-      <ModalBody>
-        <Row>
-          <Col
-            md="12"
-            onChange={handleInputChange}
-          >
-            <Input
-              name="username"
-              placeholder="Username"
-              required
-              autoFocus
-              data-cy="username"
-              value={userName.value}
-              style={{ width: "225px" }}
-            />
-            <br />
+      <div onChange={handleInputChange}>
+        <Input
+          name="username"
+          placeholder="Username"
 
-            <Input
-              name="email"
-              placeholder="Email"
-              required
-              autoFocus
-              data-cy="email"
-              value={email.value}
-              style={{ width: "225px" }}
-            />
-            <br />
+          required
+          autoFocus
+          data-cy="username"
+          value={userName.value}
+          style={{ width: "225px" }}
+        />
+        <br />
 
-            <Input
-              name="password"
-              type="password"
-              placeholder="Your password"
-              required
-              data-cy="password"
-              value={password.value}
-              style={{ width: "225px" }}
-            />
-            <br />
+        <Input
+          name="email"
+          placeholder="Email"
+          required
+          autoFocus
+          data-cy="email"
+          value={email.value}
+          style={{ width: "225px" }}
+        />
+        <br />
 
-            <Input
-              name="password-confirm"
-              type="password"
-              placeholder="Confirm password"
-              required
-              data-cy="password"
-              value={passwordConfirm.value}
-              style={{ width: "225px" }}
-            />
-            <br />
-          </Col>
-        </Row>
+        <Input
+          name="password"
+          type="password"
+          placeholder="Your password"
+          required
+          data-cy="password"
+          value={password.value}
+          style={{ width: "225px" }}
+        />
+        <br />
+
+        <Input
+          name="password-confirm"
+          type="password"
+          placeholder="Confirm password"
+          required
+          data-cy="password"
+          value={passwordConfirm.value}
+          style={{ width: "225px" }}
+        />
+        <br />
         <BottomLinks>
           <Link to="/forgot-password" data-cy="forgetYourPasswordSelector">
             Forgot password?
           </Link>
           <Link to="/login">Sign in</Link>
         </BottomLinks>
-      </ModalBody>
+      </div >
       <ModalFooter>
         <Button color="primary" type="submit" data-cy="submit">
           Next
         </Button>
       </ModalFooter>
-    </Form>
+    </Form >
   );
 };
 

@@ -2,13 +2,15 @@ package com.cha.web.rest;
 
 
 import com.cha.domain.Project;
-import com.cha.domain.SuccessResponse;
+import com.cha.domain.ProjectFiles;
+import com.cha.classes.SuccessResponse;
 import com.cha.domain.User;
 import com.cha.repository.ProjectFilesRepository;
 import com.cha.repository.ProjectRepository;
 import com.cha.repository.UserRepository;
 import com.cha.security.SecurityUtils;
 import com.cha.service.AWSS3FileStorageService;
+import com.cha.service.dto.ProjectDTO;
 import com.cha.utils.FileUtils;
 import com.cha.web.rest.vm.ProjectVM;
 import jakarta.validation.Valid;
@@ -20,6 +22,8 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 
 @RestController
@@ -55,9 +59,11 @@ public class ProjectResource {
     }
 
     @GetMapping
-    public Flux<Project> getProjectList(@RequestParam int page, @RequestParam int size) {
+    public Flux<ProjectDTO> getProjectList(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return projectRepository.findAllByUserIdOrderById(SecurityUtils.getCurrentUserLogin().flatMap(login -> getUserIdFromLogin(login)));//ByOrderById(pageable);
+        return projectRepository
+            .findAllByUserIdOrderById(SecurityUtils.getCurrentUserLogin().flatMap(this::getUserIdFromLogin))
+            .map(ProjectDTO::new);
     }
 
     @DeleteMapping
@@ -71,114 +77,38 @@ public class ProjectResource {
     }
 
     @PutMapping
-    public Mono<Boolean> editProjects(@RequestBody ProjectVM projectVM) {
-        Mono<Boolean> updateOperartion = projectRepository.findById(projectVM.getId())
+    public Mono<Void> editProjects(@RequestBody ProjectVM projectVM) {
+        return projectRepository.findById(projectVM.getId())
             .flatMap(project -> {
                 project.setDescription(projectVM.getDescription());
                 project.setName(projectVM.getName());
                 return projectRepository.save(project);
-            })
-            .flatMap(proj -> Mono.just(true)) // If update is successful, emit true
-            .defaultIfEmpty(false); // If no project is found, emit false
-
-        // Use all() to wait for all deletion operations to complete and return true if all are successful
-        return updateOperartion;
+            }).then();
     }
-    /*
-    //This is for multiple file uploading
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, path = "/upload")
-    public Mono<Boolean> uploadFiles(@RequestPart("files") Flux<FilePart> files,
-                                     @RequestPart("project_id") Mono<String> proj_id) {
-        Path directory = Paths.get("upload");
-        try {
-            Files.createDirectories(directory);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Flux<Boolean> result = files.flatMap(filePart -> {
-            // Save the file to the directory
-            return filePart.transferTo(directory.resolve(filePart.filename()))
-                .then(
-                    Mono.just("File uploaded successfully")
-                )
-                .flatMap(str -> {
-                    System.out.println("Received file: " + filePart.filename());
-                    return proj_id.flatMap(id -> {
-                        ProjectFiles projectFiles = new ProjectFiles(Long.valueOf(id),
-                            filePart.filename(),
-                            "http://s3",
-                            1L,
-                            "done"
-                        );
-                        //do aws
-                        return projectFilesRepository.save(projectFiles)
-                            .flatMap(val -> {
-                                System.out.println("success");
-                                return Mono.just(true);
-                            })
-                            .onErrorResume(throwable -> Mono.just(false));
-                    });
-                })
-                .onErrorResume(throwable -> Mono.just(false));
-        });
-        return result.all(done->done);
-    }
-     */
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, path = "/upload")
     public Mono<SuccessResponse> uploadFiles(@RequestPart("file") Mono<FilePart> file,
                                              @RequestPart("project_id") Mono<String> proj_id) {
-        /*
-        Path directory = Paths.get("upload");
-        try {
-            Files.createDirectories(directory);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return file.flatMap(filePart -> {
-            // Save the file to the directory
-            String filepath = filePart.filename();
-            System.out.println(filepath);
-            if (filepath.contains("/")) {
-                try {
-                    Files.createDirectories(directory.resolve(filepath.substring(0,filepath.lastIndexOf('/'))));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return filePart.transferTo(directory.resolve(filePart.filename()))
-                .then(
-                    Mono.just("File uploaded successfully")
-                )
-                .flatMap(str -> {
-                    return proj_id.flatMap(id -> {
-                        ProjectFiles projectFiles = new ProjectFiles(Long.valueOf(id),
-                            filePart.filename(),
-                            "http://s3",
-                            1L,
-                            "done"
-                        );
-                        //do aws
-                        return projectFilesRepository.save(projectFiles)
-                            .flatMap(val -> {
-                                System.out.println("success");
-                                return Mono.just(true);
-                            })
-                            .onErrorResume(throwable -> Mono.just(false));
-                    });
-                })
-                .onErrorResume(throwable -> Mono.just(false));
-        });
-         */
-        return file
+        return proj_id.flatMap(id -> file
             .map(f -> {
                 FileUtils.filePartValidator(f);
                 return f;
             })
-            .flatMap(fileStorageService::uploadObject)
-            .map(fileResponse -> {
-                System.out.println(123123123);
-                return new SuccessResponse(fileResponse, "Upload successfully");
-            });
+            .flatMap(filePart -> fileStorageService.uploadObject(filePart, id))
+            .flatMap(fileResponse -> {
+                System.out.println(fileResponse);
+                ProjectFiles projectFiles = new ProjectFiles(Long.valueOf(id),
+                    fileResponse.name(),
+                    fileResponse.path(),
+                    UUID.randomUUID(),
+                    "done"
+                );
+                //do aws
+                return projectFilesRepository.save(projectFiles)
+                    .map(val -> {
+                        System.out.println("success");
+                        return new SuccessResponse(fileResponse, "Upload successfully");
+                    });
+            }));
     }
 }

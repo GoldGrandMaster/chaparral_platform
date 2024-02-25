@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.cha.classes.exception.UsernameAlreadyUsedException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -93,11 +95,11 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler implemen
     }
 
     private ProblemDetailWithCause getProblemDetailWithCause(Throwable ex) {
-        if (ex instanceof com.cha.service.UsernameAlreadyUsedException) return (ProblemDetailWithCause) new LoginAlreadyUsedException()
+        if (ex instanceof UsernameAlreadyUsedException) return (ProblemDetailWithCause) new LoginAlreadyUsedException()
             .getBody();
-        if (ex instanceof com.cha.service.EmailAlreadyUsedException) return (ProblemDetailWithCause) new EmailAlreadyUsedException()
+        if (ex instanceof com.cha.classes.exception.EmailAlreadyUsedException) return (ProblemDetailWithCause) new EmailAlreadyUsedException()
             .getBody();
-        if (ex instanceof com.cha.service.InvalidPasswordException) return (ProblemDetailWithCause) new InvalidPasswordException()
+        if (ex instanceof com.cha.classes.exception.InvalidPasswordException) return (ProblemDetailWithCause) new InvalidPasswordException()
             .getBody();
 
         if (ex instanceof AuthenticationException) {

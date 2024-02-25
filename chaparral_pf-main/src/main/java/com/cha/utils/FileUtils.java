@@ -1,7 +1,7 @@
 package com.cha.utils;
 
-import com.cha.exception.FileValidatorException;
-import com.cha.exception.UploadException;
+import com.cha.classes.exception.FileValidatorException;
+import com.cha.classes.exception.UploadException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
