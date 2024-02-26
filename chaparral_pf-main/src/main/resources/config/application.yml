@@ -92,7 +92,7 @@ aws:
   secret-key:
   region:
   s3-bucket-name:
-  multipart-min-part-size: 5242880 # 5MB
+  multipart-min-part-size: # 5MB
 #  endpoint: http://localhost:4566/
 spring:
   sendgrid:
