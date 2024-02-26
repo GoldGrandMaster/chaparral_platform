@@ -11,7 +11,7 @@
     ```
     sudo apt install openjdk-21-jdk
     ```
-# Frontend
+# Frontend : we may not need this if we don't use tauri
 - Rust
     ```
     sudo apt update
@@ -42,7 +42,14 @@
 ```
 spring:
     sendgrid:
-        api-key: # sendgrid key here
+        api-key:
+
+aws:
+  access-key:
+  secret-key:
+  region:
+  s3-bucket-name:
+  multipart-min-part-size: # 5MB
 ```
 `chaparral_client-main/src/config.tsx`
 ```
