@@ -78,7 +78,7 @@ const ProjectForm = () => {
                 value={formData.description}
                 onChange={handleChange}
             />
-            <Button className="bg-primary-foreground border-[1px] border-solid border-tertiary text-primary" onClick={handleSubmit}>
+            <Button onClick={handleSubmit}>
                 Save Project
             </Button>
         </StyledForm>

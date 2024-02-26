@@ -107,7 +107,7 @@ export default function DashboardPage() {
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
             <div className="flex items-center space-x-2">
               <CalendarDateRangePicker />
-              <Button className="bg-primary-foreground border-[1px] border-solid border-tertiary text-primary">Download</Button>
+              <Button>Download</Button>
             </div>
           </div>
           <FileSelectorWrapper>Drag and drop your file/folder here</FileSelectorWrapper>

@@ -1,8 +1,5 @@
-import React from "react";
-import "react-toastify/dist/ReactToastify.css";
-import { toast } from "react-toastify";
+import { useToast } from "@/common/components/ui/use-toast"
 import { Link, useNavigate } from "react-router-dom";
-import { ModalBody, Alert, Row, Col } from "reactstrap";
 import styled from "styled-components";
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
@@ -21,15 +18,11 @@ const Form = styled.form(() => ({
 const Header = styled.h2(() => ({
   fontFamily: "sans-serif",
   marginTop: 0,
-  marginBottom: '10px'
 }));
 
 const BottomLinks = styled.div(() => ({
   display: "flex",
-  justifyContent: "space-between",
-  "a": {
-    fontSize: '0.9rem',
-  }
+  justifyContent: "space-between"
 }));
 
 const ModalFooter = styled.div(() => ({
@@ -38,7 +31,7 @@ const ModalFooter = styled.div(() => ({
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-
+  const { toast } = useToast();
   const [email] = generateState(['']);
 
   const handleConfirm = async (e: any) => {
@@ -54,18 +47,20 @@ const ForgotPassword = () => {
     })
       .then((data: any) => {
         if (data) {
-          if (data.errorData.detail) {
-            toast.error(data.detail);
+          if (data.detail) {
+            toast({
+              description: data.detail,
+              variant: 'error'
+            });
           } else {
-            toast.error("Something went wrong.");
+            toast({
+              description: 'Something went wrong',
+              variant: 'error'
+            });
           }
         } else {
           navigate("/reset-password");
         }
-      })
-      .catch((error: Error) => {
-        console.error("Error occurred:", error);
-        // Handle error as needed
       });
   }
 
@@ -75,38 +70,25 @@ const ForgotPassword = () => {
         Recover your account
       </Header>
       <p style={{ marginBottom: 20, fontSize: '0.8rem' }}>Enter the email address you used to register.</p>
-      <ModalBody>
-        <Row>
-          <Col
-            md="12"
-            onChange={(e: any) => {
-              switch (e.target.name) {
-                case "email":
-                  email.set(e.target.value.trim());
-                  break;
-              }
-              e.stopPropagation();
-            }}
-          >
-            <Input
-              name="email"
-              placeholder="Email address"
-              required
-              autoFocus
-              data-cy="email"
-              value={email.value}
-              style={{ width: "225px" }}
-            />
-            <br />
-          </Col>
-        </Row>
+      <div>
+        <Input
+          name="email"
+          placeholder="Email address"
+          required
+          autoFocus
+          data-cy="email"
+          value={email.value}
+          style={{ width: "225px" }}
+          onChange={(e: any) => email.set(e.target.value.trim())}
+        />
+        <br />
         <BottomLinks>
           <Link to="/login" data-cy="forgetYourPasswordSelector">
             Sign in
           </Link>
           <Link to="/signup">Sign up</Link>
         </BottomLinks>
-      </ModalBody>
+      </div>
       <ModalFooter>
         <Button color="primary" type="submit" data-cy="submit">
           Submit

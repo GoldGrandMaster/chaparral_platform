@@ -70,8 +70,8 @@ public class AccountResource {
      * @throws RuntimeException {@code 500 (Internal Server Error)} if the user couldn't be activated.
      */
     @GetMapping("/activate")
-    public Mono<Void> activateAccount(@RequestParam(value = "key") String key) {
-        log.debug(key);
+    public Mono<Void> activateAccount(@RequestParam(value = "key")   String key) {
+        if(key.isEmpty()) return Mono.error(new AccountResourceException("No user was found for this activation key"));
         return userService
             .activateRegistration(key)
             .switchIfEmpty(Mono.error(new AccountResourceException("No user was found for this activation key")))
@@ -180,7 +180,16 @@ public class AccountResource {
             .switchIfEmpty(Mono.error(new AccountResourceException("No user was found for this reset key")))
             .then();
     }
-
+    @PostMapping(path = "/account/reset-password/normal")
+    public Mono<Void> passwordResetNormal(@RequestBody String password) {
+        if (isPasswordLengthInvalid(password)) {
+            throw new InvalidPasswordException();
+        }
+        return userService
+            .passwordResetNormal(password)
+            .switchIfEmpty(Mono.error(new AccountResourceException("Error setting password")))
+            .then();
+    }
     private static boolean isPasswordLengthInvalid(String password) {
         return (
             StringUtils.isEmpty(password) ||

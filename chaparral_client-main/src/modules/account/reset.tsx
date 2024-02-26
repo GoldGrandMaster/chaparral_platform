@@ -1,13 +1,11 @@
-import React from "react";
-import "react-toastify/dist/ReactToastify.css";
-import { toast } from "react-toastify";
+import { useToast } from "@/common/components/ui/use-toast"
 import { Link, useNavigate } from "react-router-dom";
-import { Button, ModalBody, Alert, Row, Col } from "reactstrap";
 import styled from "styled-components";
 
 import generateState from "../../common/misc/stateGenerator";
 import config from "@/config";
 import { Input } from "@/common/components/ui/input";
+import { Button } from "@/common/components/ui/button";
 
 const Form = styled.form(() => ({
   display: "flex",
@@ -33,12 +31,18 @@ const ModalFooter = styled.div(() => ({
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-
-  const [resetKey, newPassword] = generateState(['', '']);
+  const { toast } = useToast();
+  const [resetKey, newPassword, newPassword1] = generateState(['', '', '']);
 
   const handleConfirm = (e: any) => {
     e.preventDefault();
-
+    if (newPassword.value != newPassword1.value) {
+      toast({
+        description: "Password must match",
+        variant: 'error'
+      });
+      return;
+    }
     fetch(config.backend_url + 'account/reset-password/finish', {
       method: 'POST',
       headers: {
@@ -55,19 +59,17 @@ const ResetPassword = () => {
       .then(msg => {
         if (!msg) {
           navigate("/login");
-          toast.success("Successfully changed your password!");
+          toast({
+            description: "Successfully changed your password",
+            variant: 'success'
+          });
         } else {
-          if (msg.detail) {
-            toast.error(msg.detail);
-          } else {
-            toast.error("Something went wrong.");
-          }
+          toast({
+            description: msg.detail,
+            variant: 'error'
+          });
         }
       })
-      .catch(error => {
-        console.error("Error:", error);
-        toast.error("An error occurred while processing your request.");
-      });
   };
 
   return (
@@ -77,56 +79,48 @@ const ResetPassword = () => {
       </Header>
       <p>Please check your email for the reset key.</p>
       <br></br>
-      <ModalBody>
-        <Row>
-          <Col
-            md="12"
-            onChange={(e: any) => {
-              switch (e.target.name) {
-                case "reset_key":
-                  resetKey.set(e.target.value.trim());
-                  break;
-                case "new_password":
-                  newPassword.set(e.target.value.trim());
-                  break;
-              }
-              e.stopPropagation();
-            }}
-          >
-            <Input
-              name="reset_key"
-              placeholder="Reset key"
-              required
-              autoFocus
-              data-cy="reset_key"
-              value={resetKey.value}
-              style={{ width: "225px" }}
-            />
-            <br />
-            <Input
-              name="new_password"
-              type="password"
-              placeholder="New password"
-              required
-              data-cy="new_password"
-              value={newPassword.value}
-              style={{ width: "225px" }}
-            />
-            <br />
-          </Col>
-        </Row>
-        <div className="mt-1">&nbsp;</div>
+      <div>
+
+        <Input
+          name="reset_key"
+          placeholder="Reset key"
+          required
+          autoFocus
+          data-cy="reset_key"
+          value={resetKey.value}
+          style={{ width: "225px" }}
+          onChange={(e: any) => resetKey.set(e.target.value.trim())}
+        />
+        <br />
+        <Input
+          name="new_password"
+          type="password"
+          placeholder="New password"
+          required
+          data-cy="new_password"
+          value={newPassword.value}
+          style={{ width: "225px" }}
+          onChange={(e: any) => newPassword.set(e.target.value.trim())}
+        />
+        <br />
+        <Input
+          name="new_password1"
+          type="password"
+          placeholder="Confirm New password"
+          required
+          data-cy="new_password1"
+          value={newPassword1.value}
+          style={{ width: "225px" }}
+          onChange={(e: any) => newPassword1.set(e.target.value.trim())}
+        />
+        <br />
         <BottomLinks>
-          <Alert color="warning">
-            <Link to="/login" data-cy="forgetYourPasswordSelector">
-              Sign in
-            </Link>
-          </Alert>
-          <Alert color="warning">
-            <Link to="/signup">Sign up</Link>
-          </Alert>
+          <Link to="/login" data-cy="forgetYourPasswordSelector">
+            Sign in
+          </Link>
+          <Link to="/signup">Sign up</Link>
         </BottomLinks>
-      </ModalBody>
+      </div>
       <ModalFooter>
         <Button color="primary" type="submit" data-cy="submit">
           Submit

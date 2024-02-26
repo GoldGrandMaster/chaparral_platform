@@ -4,13 +4,13 @@ import { Button } from '@/common/components/ui/button';
 import styled from 'styled-components';
 import { useNavigate } from "react-router-dom";
 import config from '@/config';
-import { toast } from "react-toastify";
+import { useToast } from '@/common/components/ui/use-toast';
 
 const Label = styled.label`
   font-weight: bold;
 `;
 
-const StyledForm = styled.div`
+const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -22,7 +22,7 @@ const ProjectForm = () => {
         name: '',
         description: '',
     });
-    const navigate = useNavigate();
+    const { toast } = useToast();
 
     const handleChange = (event: any) => {
         const { name, value } = event.target;
@@ -32,7 +32,8 @@ const ProjectForm = () => {
         }));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -47,47 +48,42 @@ const ProjectForm = () => {
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                id: JSON.parse(localStorage.getItem('currentProject') || "")[1],
+                id: JSON.parse(localStorage.getItem('currentProject') || "")['id'],
                 name: formData.name,
                 description: formData.description
             })
         };
 
         fetch(config.backend_url + 'projects', requestOptions)
-            .then(response => {
-                if (response.ok) return response.json();
-                throw new Error("There was an error");
-            })
+            .then(response => response.text())
             .then(res => {
-                navigate('/user/project/');
+                toast({ variant: 'success', description: 'Successfully updated' })
             })
-            .catch(error => {
-                console.error('Error:', error);
-                toast.error("There was an error");
-            });
     };
     useEffect(() => {
         const curProj = JSON.parse(localStorage.getItem('currentProject') || "");
         setFormData({
-            name: curProj[2],
-            description: curProj[3]
+            name: curProj.name,
+            description: curProj.description
         });
     }, [])
     return (
-        <StyledForm>
+        <StyledForm onSubmit={handleSubmit}>
             <Label>Name</Label>
             <Input
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
+                required
             />
             <Label>Description</Label>
             <Input
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
+                required
             />
-            <Button className="bg-primary-foreground border-[1px] border-solid border-tertiary text-primary" onClick={handleSubmit}>
+            <Button type='submit'>
                 Update Project
             </Button>
         </StyledForm>

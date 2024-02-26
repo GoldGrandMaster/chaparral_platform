@@ -1,7 +1,7 @@
 package com.cha.service;
 
-import com.cha.domain.AWSS3Object;
-import com.cha.domain.FileResponse;
+import com.cha.classes.AWSS3Object;
+import com.cha.classes.FileResponse;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.codec.multipart.FilePart;
 import reactor.core.publisher.Flux;
@@ -14,7 +14,7 @@ public interface AWSS3FileStorageService {
      * @param filePart - the request part containing the file to be saved
      * @return Mono of {@link FileResponse} representing the result of the operation
      */
-    Mono<FileResponse> uploadObject(FilePart filePart);
+    Mono<FileResponse> uploadObject(FilePart filePart, String project_id);
 
     /**
      * Retrieves byte objects from Amazon S3.
@@ -34,4 +34,6 @@ public interface AWSS3FileStorageService {
      * @return Flux of object key
      */
     Flux<AWSS3Object> getObjects();
+
+    Mono<Boolean> uploadJson(String filePath);
 }

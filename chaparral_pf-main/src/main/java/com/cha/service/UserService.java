@@ -1,5 +1,8 @@
 package com.cha.service;
 
+import com.cha.classes.exception.EmailAlreadyUsedException;
+import com.cha.classes.exception.InvalidPasswordException;
+import com.cha.classes.exception.UsernameAlreadyUsedException;
 import com.cha.config.Constants;
 import com.cha.domain.Authority;
 import com.cha.domain.User;
@@ -9,11 +12,13 @@ import com.cha.security.AuthoritiesConstants;
 import com.cha.security.SecurityUtils;
 import com.cha.service.dto.AdminUserDTO;
 import com.cha.service.dto.UserDTO;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +30,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import tech.jhipster.security.RandomUtil;
+
 /**
  * Service class for managing users.
  */
@@ -76,6 +82,22 @@ public class UserService {
     }
 
     @Transactional
+    public Mono<User> passwordResetNormal(String newPassword) {
+        return
+            SecurityUtils
+                .getCurrentUserLogin()
+                .flatMap(login -> userRepository
+                    .findOneByLogin(login)
+                    .map(user -> {
+                        user.setPassword(passwordEncoder.encode(newPassword));
+                        user.setResetKey(null);
+                        user.setResetDate(null);
+                        return user;
+                    })
+                    .flatMap(this::saveUser));
+    }
+
+    @Transactional
     public Mono<User> requestPasswordReset(String mail) {
         mail = mail.substring(1, mail.length() - 1);
         System.out.println(mail);
@@ -96,19 +118,19 @@ public class UserService {
         return userRepository
             .findOneByLogin(userDTO.getLogin().toLowerCase())
             .flatMap(existingUser -> {
-                if (!existingUser.isActivated()) {
-                    return userRepository.delete(existingUser);
-                } else {
+//                if (!existingUser.isActivated()) {
+//                    return userRepository.delete(existingUser);
+//                } else {
                     return Mono.error(new UsernameAlreadyUsedException());
-                }
+//                }
             })
             .then(userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()))
             .flatMap(existingUser -> {
-                if (!existingUser.isActivated()) {
-                    return userRepository.delete(existingUser);
-                } else {
+//                if (!existingUser.isActivated()) {
+//                    return userRepository.delete(existingUser);
+//                } else {
                     return Mono.error(new EmailAlreadyUsedException());
-                }
+//                }
             })
             .publishOn(Schedulers.boundedElastic())
             .then(
@@ -335,10 +357,26 @@ public class UserService {
 
     /**
      * Gets a list of all the authorities.
+     *
      * @return a list of all the authorities.
      */
     @Transactional(readOnly = true)
     public Flux<String> getAuthorities() {
         return authorityRepository.findAll().map(Authority::getName);
+    }
+
+    @Transactional
+    public Mono<Boolean> updateOrgName(String name) {
+        return SecurityUtils
+            .getCurrentUserLogin()
+            .flatMap(login ->
+                userRepository
+                    .findOneByLogin(login)
+                    .flatMap(user -> userRepository.save(user).map(u -> true)));
+    }
+    @Transactional
+    public Mono<User> isUserExist(String login) {
+        return userRepository
+            .findOneByLogin(login);
     }
 }
