@@ -35,5 +35,5 @@ public interface AWSS3FileStorageService {
      */
     Flux<AWSS3Object> getObjects();
 
-    Mono<Boolean> uploadJson(String filePath);
+    Mono<String> uploadJson(String filePath);
 }

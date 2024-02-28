@@ -88,11 +88,11 @@ management:
           enabled: true
 # AWS properties
 aws:
-  access-key:
-  secret-key:
-  region:
-  s3-bucket-name:
-  multipart-min-part-size: # 5MB
+  access-key: 
+  secret-key: 
+  region: us-west-2
+  s3-bucket-name: chaparral-testing-bucket
+  multipart-min-part-size: 5242880 # 5MB
 #  endpoint: http://localhost:4566/
 spring:
   sendgrid:

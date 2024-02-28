@@ -1,5 +1,6 @@
 import axios from 'axios'
 import uploadFileTypes from './uploadFile.types'
+import config from '@/config'
 
 export const setUploadFile = (data: any, project_id: any) => ({
   type: uploadFileTypes.SET_UPLOAD_FILE,
@@ -39,7 +40,7 @@ export const uploadFile = (files: any) => (dispatch: any) => {
 
       try {
         await axios({
-          baseURL: 'http://localhost:8080/api/projects',
+          baseURL: config.backend_url + 'projects',
           url: '/upload',
           headers: {
             Authorization: `Bearer ${token}`

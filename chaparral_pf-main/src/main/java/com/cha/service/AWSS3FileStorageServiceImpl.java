@@ -212,14 +212,15 @@ public class AWSS3FileStorageServiceImpl implements AWSS3FileStorageService {
             .build()));
     }
 
-    public Mono<Boolean> uploadJson(String filename) {
+    public Mono<String> uploadJson(String filename) {
+        String path = "json/"+filename;
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
             .bucket(s3ConfigProperties.getS3BucketName())
-            .key("json/" + filename)
+            .key(path)
             .build();
 
         return Mono.fromFuture(() -> s3AsyncClient.putObject(putObjectRequest,
-                AsyncRequestBody.fromFile(Paths.get("json/" + filename))))
-            .map(response -> true);
+                AsyncRequestBody.fromFile(Paths.get(path))))
+            .map(response -> "https://s3."+s3ConfigProperties.getRegion()+".amazonaws.com/"+s3ConfigProperties.getS3BucketName()+"/"+path);
     }
 }

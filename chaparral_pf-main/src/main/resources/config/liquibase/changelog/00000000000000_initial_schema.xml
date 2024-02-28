@@ -58,7 +58,7 @@
 
 
         <createTable tableName="jhi_project_files">
-            <column name="id" type="bigint" autoIncrement="true" startWith="3">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="project_id" type="bigint">
@@ -132,12 +132,6 @@
             file="config/liquibase/data/project.csv"
             separator=";"
             tableName="jhi_project"
-            usePreparedStatements="true">
-        </loadData>
-        <loadData
-            file="config/liquibase/data/project_files.csv"
-            separator=";"
-            tableName="jhi_project_files"
             usePreparedStatements="true">
         </loadData>
     </changeSet>

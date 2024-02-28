@@ -9,7 +9,7 @@ import { Button } from "@/common/components/ui/button";
 
 const Form = styled.form(() => ({
   display: "flex",
-  height: "100vh",
+  height: "100%",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",

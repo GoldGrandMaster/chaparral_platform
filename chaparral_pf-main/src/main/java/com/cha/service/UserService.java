@@ -5,8 +5,10 @@ import com.cha.classes.exception.InvalidPasswordException;
 import com.cha.classes.exception.UsernameAlreadyUsedException;
 import com.cha.config.Constants;
 import com.cha.domain.Authority;
+import com.cha.domain.Organization;
 import com.cha.domain.User;
 import com.cha.repository.AuthorityRepository;
+import com.cha.repository.OrganizationRepository;
 import com.cha.repository.UserRepository;
 import com.cha.security.AuthoritiesConstants;
 import com.cha.security.SecurityUtils;
@@ -40,13 +42,15 @@ public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+    private final OrganizationRepository organizationRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     private final AuthorityRepository authorityRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository) {
+    public UserService(UserRepository userRepository, OrganizationRepository organizationRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository) {
         this.userRepository = userRepository;
+        this.organizationRepository = organizationRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
     }
@@ -121,7 +125,7 @@ public class UserService {
 //                if (!existingUser.isActivated()) {
 //                    return userRepository.delete(existingUser);
 //                } else {
-                    return Mono.error(new UsernameAlreadyUsedException());
+                return Mono.error(new UsernameAlreadyUsedException());
 //                }
             })
             .then(userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()))
@@ -129,7 +133,7 @@ public class UserService {
 //                if (!existingUser.isActivated()) {
 //                    return userRepository.delete(existingUser);
 //                } else {
-                    return Mono.error(new EmailAlreadyUsedException());
+                return Mono.error(new EmailAlreadyUsedException());
 //                }
             })
             .publishOn(Schedulers.boundedElastic())
@@ -162,7 +166,13 @@ public class UserService {
                     .thenReturn(newUser)
                     .doOnNext(user -> user.setAuthorities(authorities))
                     .flatMap(this::saveUser)
-                    .doOnNext(user -> log.debug("Created Information for User: {}", user));
+                    .doOnNext(user -> {
+                        log.debug("Created Information for User: {}", user);
+                        Organization organization = new Organization();
+                        organization.setName(user.getLogin() + ".org");
+                        organization.setUserId(user.getId());
+                        organizationRepository.save(organization);
+                    });
             });
     }
 
@@ -374,6 +384,7 @@ public class UserService {
                     .findOneByLogin(login)
                     .flatMap(user -> userRepository.save(user).map(u -> true)));
     }
+
     @Transactional
     public Mono<User> isUserExist(String login) {
         return userRepository

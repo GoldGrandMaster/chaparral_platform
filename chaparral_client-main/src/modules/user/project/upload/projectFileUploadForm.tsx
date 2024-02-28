@@ -25,19 +25,20 @@ const ProjectFileUploadForm = () => {
     const [isInDropzone, setIsInDropzone] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
-    const filterdFiles: File[] = [];
     const handleFileUpload = (filelist: File[]) => {
-        console.log(filelist);
-        for (let i = 0; i < filelist.length; i++) {
-            if (filelist[i].name != 'analysis.tdf' && filelist[i].name != 'analysis.tdf_bin') continue;
-            let path: string = Object.getOwnPropertyDescriptor(filelist[i], 'path')?.value;
-            if (path[0] == '/') path = path.substring(1);
-            if (path.indexOf('/') == path.lastIndexOf('/'))
-                filterdFiles.push(filelist[i]);
+        if (filelist.length) {
+            const filterdFiles: File[] = [];
+            for (let i = 0; i < filelist.length; i++) {
+                if (filelist[i].name != 'analysis.tdf' && filelist[i].name != 'analysis.tdf_bin') continue;
+                let path: string = Object.getOwnPropertyDescriptor(filelist[i], 'path')?.value;
+                if (path[0] == '/') path = path.substring(1);
+                if (path.indexOf('/') == path.lastIndexOf('/'))
+                    filterdFiles.push(filelist[i]);
+            }
+            if (filterdFiles.length) {
+                dispatch(setUploadFile(filterdFiles, curProject.id));
+            }
         }
-        // setFiles(filt);
-        dispatch(setUploadFile(filterdFiles, curProject.id));
-        // setFiles([]);
     }
 
     // const handleSubmit = () => {
@@ -77,7 +78,6 @@ const ProjectFileUploadForm = () => {
 
     useEffect(() => {
         const curProj = JSON.parse(localStorage.getItem('currentProject') || "");
-        console.log(curProj);
         setCurProject(curProj);
     }, [])
     return (

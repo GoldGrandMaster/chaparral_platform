@@ -59,7 +59,7 @@ const Signup = () => {
         langKey: "en",
       }),
     })
-      .then((res: Response) => res.json())
+      .then((res: Response) => res.ok ? res.text() : res.json())
       .then((msg: any) => {
         if (msg) {
           if (msg.detail) {
