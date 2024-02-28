@@ -10,15 +10,17 @@
         JHipster core tables.
         The initial schema has the '00000000000001' id, so that it is over-written if we re-generate it.
     -->
-    <changeSet id="00000000000003" author="jhipster">
-        <createTable tableName="jhi_search_params">
+    <changeSet id="00000000000004" author="jhipster">
+        <createTable tableName="jhi_search_jobs">
             <column name="id" type="bigint" autoIncrement="true" startWith="1">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="batch_job_id" type="uuid"/>
-            <column name="batch_jop_status" type="varchar(20)"/>
+            <column name="batch_job_status" type="varchar(20)"/>
             <column name="params" type="json"/>
-            <column name="search_result_prefix" type="text"/>
+            <column name="search_results_prefix" type="text"/>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_date" type="timestamp"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

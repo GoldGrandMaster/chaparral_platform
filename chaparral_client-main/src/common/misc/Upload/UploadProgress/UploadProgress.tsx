@@ -15,11 +15,9 @@ const UploadProgress = () => {
   const dispatch = useDispatch();
   const fileProgress = useSelector((state: any) => state.UploadFile.fileProgress);
   const uploadedFileAmount = size(fileProgress);
-  const [filesOnly, setFilesOnly] = useState<any[]>([]);
-  const [dirsOnly, setDirsOnly] = useState<DirMap>({});
   const [finalOut, setFinalOut] = useState<any[]>([]);
   useEffect(() => {
-    const fileToUpload = toArray(fileProgress).filter((file: any) => file.progress === 0)
+    const fileToUpload = toArray(fileProgress).filter((file: any) => file.progress === 0 && file.status === STATUS_UPLOAD.uploading)
     dispatch<any>(uploadFile(fileToUpload));
 
   }, [uploadedFileAmount])

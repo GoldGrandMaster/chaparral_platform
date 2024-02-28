@@ -14,7 +14,7 @@ import ProjectFileUploadPage from "./modules/user/project/upload/projectFileUplo
 import OrganizationSetting from "./modules/user/organization/OrganizationSetting";
 import OrganizationInvite from "./modules/user/organization/OrganizationInvite";
 import SearchPage from "./modules/user/project/search/searchpage";
-import ResetPasswordNormal from "./modules/account/reset_normal";
+import ResetPasswordNormal from "./modules/account/reset-normal";
 const AppRoutes = () => {
   return (
     <div className="view-routes">

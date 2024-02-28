@@ -1,8 +1,10 @@
 package com.cha.web.rest;
 
 import com.cha.service.AWSS3FileStorageService;
+import com.cha.service.SearchJobsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import io.r2dbc.postgresql.codec.Json;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -10,8 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 
@@ -19,13 +19,15 @@ import java.util.UUID;
 @RequestMapping("/api/search")
 public class SearchController {
     private final AWSS3FileStorageService fileStorageService;
+    private final SearchJobsService searchJobsService;
 
-    public SearchController(AWSS3FileStorageService fileStorageService) {
+    public SearchController(AWSS3FileStorageService fileStorageService, SearchJobsService searchJobsService) {
         this.fileStorageService = fileStorageService;
+        this.searchJobsService = searchJobsService;
     }
 
     @PostMapping
-    public Mono<Boolean> search(@RequestBody String s) throws IOException {
+    public Mono<Boolean> search(@RequestBody Json s) throws IOException {
         Path directory = Paths.get("json");
         try {
             Files.createDirectories(directory);
@@ -34,9 +36,20 @@ public class SearchController {
         }
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        String formatted = mapper.writeValueAsString(mapper.readValue(s, Object.class));
-        String filename = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + UUID.randomUUID() + ".json";
+        String formatted = mapper.writeValueAsString(mapper.readValue(s.asString(), Object.class));
+        String filename = UUID.randomUUID() + ".json";
         Files.write(Paths.get("json/" + filename), formatted.getBytes());
-        return fileStorageService.uploadJson(filename);
+        return fileStorageService
+            .uploadJson(filename)
+            .flatMap(path->{
+                try {
+                    Files.delete(Paths.get("json/" + filename));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                return searchJobsService
+                    .saveNew(s, path)
+                    .map(obj->true);
+            });
     }
 }

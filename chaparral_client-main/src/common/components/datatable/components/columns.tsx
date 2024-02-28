@@ -2,14 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 
-import { Badge } from "@/common/components/ui/badge"
 import { Checkbox } from "@/common/components/ui/checkbox"
 
-import { labels, priorities, statuses } from "../data/data"
 import { Task } from "../data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
-import { DataTableRowActions } from "./data-table-row-actions"
-import { Button } from "../../ui/button"
 import { EditIcon, SearchIcon, UploadIcon } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 export const columns: ColumnDef<Task>[] = [
